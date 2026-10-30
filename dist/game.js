@@ -116,7 +116,7 @@ function startGame(topic) {
   state = {
     topic, plan: '아직 계획을 선택하지 않았습니다', destinationY: 290,
     stage: 0, phase: 'walking', player: { x: 120, y: 290 },
-    trail: [{ x: 120, y: 290 }], trailSvgPath: '', decisions: [], lastForkY: 290,
+    trail: [{ x: 120, y: 290 }], trailSvgPath: '', decisions: [], lastForkY: 290, visitedChoiceIndex: -1,
     dogMood: 'calm', tension: false, intentAway: false, feedbackMode: '', planPromptVisible: false,
     dog: { x: 195, y: 290, pose: 'walking', refusalTime: 0 },
     hint: 'D를 눌러 갈림길로 걸어가세요 →'
@@ -254,6 +254,24 @@ function recordTrail() {
   }
 }
 
+function updateVisitedChoice() {
+  if (!state) return;
+  let nearest = -1;
+  let distance = 350;
+  state.decisions.forEach((decision, index) => {
+    const gap = Math.abs(state.player.x - GATE_X(index));
+    if (gap < distance) { nearest = index; distance = gap; }
+  });
+  if (nearest === state.visitedChoiceIndex) return;
+  state.visitedChoiceIndex = nearest;
+  $('visited-choice').classList.toggle('hidden', nearest < 0);
+  if (nearest < 0) return;
+  const decision = state.decisions[nearest];
+  $('visited-choice-number').textContent = `지나온 갈림길 ${nearest + 1} / 5`;
+  $('visited-choice-plan').textContent = decision.plan;
+  $('visited-choice-reason').textContent = `선택 이유: ${decision.reason}`;
+}
+
 function updateDogPosition(dt) {
   const dog = state.dog;
   const human = state.player;
@@ -303,7 +321,7 @@ function updateMovement(dt) {
     if (dy && Math.abs(p.y - aiY) > 20) {
       state.intentAway = Math.sign(dy) !== Math.sign(aiY - p.y);
     }
-    state.tension = state.intentAway && Math.abs(p.y - aiY) > 68;
+    state.tension = nearFork && state.intentAway && Math.abs(p.y - aiY) > 68;
     if (Math.abs(p.y - aiY) <= 45) state.intentAway = false;
     if (nearFork && !state.intentAway && (Math.abs(p.y - aiY) <= 68 || (dy && Math.sign(dy) === Math.sign(aiY - p.y)))) state.dogMood = 'calm';
     if (nearFork && !state.tension && Math.abs(p.y - aiY) > 4) p.y += Math.sign(aiY - p.y) * 30 * dt;
@@ -313,12 +331,12 @@ function updateMovement(dt) {
       $('movement-hint').textContent = state.hint;
     }
   }
-  if (!dx && !dy) { updateDogPosition(dt); recordTrail(); return; }
+  if (!dx && !dy) { updateDogPosition(dt); recordTrail(); updateVisitedChoice(); return; }
   settlePlanComposer();
   const norm = Math.hypot(dx, dy); dx /= norm; dy /= norm;
   const speed = state.tension ? (state.dog.refusalTime < .55 ? 0 : 105) : nearFork ? 340 : 220;
   p.y = Math.max(55, Math.min(525, p.y + dy * speed * dt));
-  p.x = Math.max(state.stage ? GATE_X(state.stage - 1) + 35 : 80, p.x + dx * speed * dt);
+  p.x = Math.max(80, p.x + dx * speed * dt);
   updateDogPosition(dt);
   if (state.phase === 'walking') {
     const gate = GATE_X(state.stage);
@@ -346,6 +364,7 @@ function updateMovement(dt) {
     $('movement-hint').textContent = state.hint;
   }
   recordTrail();
+  updateVisitedChoice();
 }
 
 function choosePath(laneIndex) {
@@ -393,6 +412,7 @@ function commitDecision(laneIndex, option) {
   $('decision-overlay').classList.add('hidden');
   updateHUD();
   recordTrail();
+  updateVisitedChoice();
 }
 
 function finishGame() {
@@ -473,8 +493,11 @@ function drawGame(time) {
     const syy = (i * 113) % 550;
     ctx.beginPath(); ctx.arc(sx, syy, i % 4 === 0 ? 2.2 : 1.2, 0, Math.PI * 2); ctx.fill();
   }
-  if (state.stage < STAGE_COUNT) drawFork(px, state.stage, time);
-  else drawFinish(px, time);
+  for (let stage = 0; stage <= Math.min(state.stage, STAGE_COUNT - 1); stage++) {
+    if (stage > 0) drawConnection(px, stage);
+    drawFork(px, stage, time);
+  }
+  if (state.stage === STAGE_COUNT) drawFinish(px, time);
   if (state.trail.length > 1) {
     ctx.beginPath(); ctx.moveTo(px(state.trail[0].x), state.trail[0].y);
     for (let i = 1; i < state.trail.length; i++) ctx.lineTo(px(state.trail[i].x), state.trail[i].y);
@@ -514,20 +537,35 @@ function drawGame(time) {
   ctx.restore();
 }
 
+function drawConnection(px, stage) {
+  const laneY = LANES[state.decisions[stage - 1].lane];
+  ctx.beginPath();
+  ctx.moveTo(px(GATE_X(stage - 1) + 135), laneY);
+  ctx.lineTo(px(GATE_X(stage) - 360), laneY);
+  ctx.strokeStyle = '#172e33'; ctx.lineWidth = 55; ctx.lineCap = 'round'; ctx.stroke();
+  ctx.strokeStyle = '#dcefa277'; ctx.lineWidth = 3; ctx.setLineDash([10, 10]); ctx.stroke(); ctx.setLineDash([]);
+}
+
 function drawFork(px, stage, time) {
   const gate = GATE_X(stage);
-  const startX = px(gate - 360), endX = px(gate + 135), anchorY = stage ? state.lastForkY : 290;
+  const startX = px(gate - 360), endX = px(gate + 135), anchorY = stage ? LANES[state.decisions[stage - 1].lane] : 290;
+  const chosenLane = state.decisions[stage]?.lane;
   LANES.forEach((laneY, i) => {
     ctx.beginPath(); ctx.moveTo(startX, anchorY);
     ctx.bezierCurveTo(px(gate - 210), anchorY, px(gate - 240), laneY, px(gate - 90), laneY);
     ctx.lineTo(endX, laneY);
     ctx.strokeStyle = '#172e33'; ctx.lineWidth = 55; ctx.lineCap = 'round'; ctx.stroke();
     const recommended = i === RECOMMENDED_PLAN[stage];
-    ctx.strokeStyle = planColor(stage, i) + (recommended ? 'dd' : '83'); ctx.lineWidth = recommended ? 4 : 3; ctx.setLineDash([9, 10]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = planColor(stage, i) + (chosenLane === i ? 'ff' : recommended ? 'dd' : '83'); ctx.lineWidth = chosenLane === i ? 5 : recommended ? 4 : 3; ctx.setLineDash([9, 10]); ctx.stroke(); ctx.setLineDash([]);
     const bx = px(gate - 110), by = laneY - 42;
     roundedRect(bx - 15, by, 150, 31, 15, '#172831ee');
     ctx.fillStyle = planColor(stage, i); ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
     ctx.fillText(`${i + 1}안${recommended ? ' · AI 추천' : ''}`, bx + 60, by + 20);
+    if (chosenLane === i) {
+      roundedRect(px(gate + 65), laneY - 41, 87, 27, 11, '#e8f0d9');
+      ctx.fillStyle = '#244239'; ctx.font = 'bold 11px sans-serif';
+      ctx.fillText('내가 고른 길', px(gate + 108), laneY - 23);
+    }
     ctx.beginPath(); ctx.arc(px(gate + 60), laneY, 6 + Math.sin(time * 3 + i) * 1.5, 0, Math.PI * 2);
     ctx.fillStyle = planColor(stage, i); ctx.fill();
   });
