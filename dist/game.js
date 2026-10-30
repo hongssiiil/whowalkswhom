@@ -116,7 +116,7 @@ function startGame(topic) {
   state = {
     topic, plan: '아직 계획을 선택하지 않았습니다', destinationY: 290,
     stage: 0, phase: 'walking', player: { x: 120, y: 290 },
-    trail: [{ x: 120, y: 290 }], decisions: [], lastForkY: 290,
+    trail: [{ x: 120, y: 290 }], trailSvgPath: '', decisions: [], lastForkY: 290,
     dogMood: 'calm', tension: false, intentAway: false, feedbackMode: '', planPromptVisible: false,
     dog: { x: 195, y: 290, pose: 'walking', refusalTime: 0 },
     hint: 'D를 눌러 갈림길로 걸어가세요 →'
@@ -124,6 +124,11 @@ function startGame(topic) {
   keys.clear(); previousTime = 0;
   $('original-goal').textContent = topic.question;
   $('axis-label').textContent = `${topic.x} × ${topic.y} · 산책의 은유`;
+  const startPoint = trailOverviewPoint(state.trail[0]);
+  state.trailSvgPath = `M${startPoint.x},${startPoint.y}`;
+  $('trail-overview-line').setAttribute('d', state.trailSvgPath);
+  $('trail-overview-current').setAttribute('cx', startPoint.x);
+  $('trail-overview-current').setAttribute('cy', startPoint.y);
   updateHUD();
   showScreen('game');
   resizeCanvas();
@@ -229,10 +234,24 @@ function getScale() {
   return { w: rect.width, h: rect.height, sy: rect.height / 580, sx: Math.min(1, rect.width / 1000) };
 }
 
+function trailOverviewPoint(point) {
+  return {
+    x: +(16 + (point.x - 120) / (FINISH_X - 120) * 268).toFixed(1),
+    y: +(10 + point.y / 580 * 72).toFixed(1)
+  };
+}
+
 function recordTrail() {
   const last = state.trail[state.trail.length - 1];
   const p = state.player;
-  if (Math.hypot(last.x - p.x, last.y - p.y) > 3) state.trail.push({ x: p.x, y: p.y });
+  if (Math.hypot(last.x - p.x, last.y - p.y) > 3) {
+    state.trail.push({ x: p.x, y: p.y });
+    const point = trailOverviewPoint(p);
+    state.trailSvgPath += ` L${point.x},${point.y}`;
+    $('trail-overview-line').setAttribute('d', state.trailSvgPath);
+    $('trail-overview-current').setAttribute('cx', point.x);
+    $('trail-overview-current').setAttribute('cy', point.y);
+  }
 }
 
 function updateDogPosition(dt) {
