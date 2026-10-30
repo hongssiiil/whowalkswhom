@@ -1,40 +1,6 @@
-const TOPICS = [
-  {
-    id: 'age', label: '연령과 삶의 만족도', question: '연령에 따라 삶의 만족도는 어떻게 달라질까?', x: '연령', y: '삶의 만족도',
-    steps: [
-      { title: '어떤 변수를 볼까요?', prompt: '성별, 연령, 교육 수준을 얼마나 포함할지 정합니다.' },
-      { title: '연령을 묶을까요?', prompt: '각 나이를 그대로 둘지, 연령대로 묶을지 결정합니다.', advice: '연령대를 나누면 비교가 한눈에 들어와요. 다만 세부 차이는 줄어들 수 있습니다.', revision: '연령대 안에서는 만족도가 얼마나 다양할까?' },
-      { title: '빈칸을 어떻게 볼까요?', prompt: '응답하지 않은 만족도 값이 발견되었습니다.', advice: '결측 응답을 따로 표시해 먼저 규모를 확인하면 해석이 안전해집니다.', revision: '만족도에 응답하지 않은 사람들에게 공통점이 있을까?' },
-      { title: '어느 차이에 주목할까요?', prompt: '전체 추세와 집단별 차이가 다르게 보일 수 있습니다.', advice: '전체 추세선과 연령대별 분포를 함께 보면 한쪽만 볼 때 놓치는 점을 찾을 수 있어요.', revision: '같은 연령대 안의 차이는 무엇으로 설명할 수 있을까?' },
-      { title: '어디까지 말할 수 있을까요?', prompt: '그래프를 한 문장으로 설명할 차례입니다.', advice: '관계가 보이더라도 연령이 만족도의 원인이라고 단정하지 않는 해석을 추천해요.', revision: '이 그래프만으로 알 수 없는 것은 무엇일까?' }
-    ]
-  },
-  {
-    id: 'income', label: '소득과 행복', question: '소득과 행복은 어떤 관계가 있을까?', x: '소득', y: '행복',
-    steps: [
-      { title: '어떤 변수를 볼까요?', prompt: '성별, 소득, 교육 수준을 얼마나 포함할지 정합니다.' },
-      { title: '소득을 묶을까요?', prompt: '소득을 연속된 값으로 볼지 구간으로 나눌지 결정합니다.', advice: '소득 구간을 나누면 집단 비교가 쉬워져요. 경계에 따라 모습이 바뀔 수 있다는 점은 기억해 주세요.', revision: '같은 소득 구간 안에서 행복은 얼마나 다를까?' },
-      { title: '빈칸을 어떻게 볼까요?', prompt: '소득을 밝히지 않은 응답이 발견되었습니다.', advice: '응답하지 않은 비율을 먼저 확인하고, 누락이 해석에 미칠 영향을 적어 두는 게 좋겠어요.', revision: '소득 무응답은 어떤 사람들에게서 나타날까?' },
-      { title: '어느 차이에 주목할까요?', prompt: '평균만 보면 개인 간 차이가 가려질 수 있습니다.', advice: '전체 경향과 소득 구간 안의 차이를 함께 보여 주세요.', revision: '비슷한 소득에서도 행복이 다른 이유는 무엇일까?' },
-      { title: '어디까지 말할 수 있을까요?', prompt: '그래프를 한 문장으로 설명할 차례입니다.', advice: '소득과 행복의 연관성을 말하되, 소득이 행복을 결정한다고 단정하지 않는 편이 좋아요.', revision: '이 자료만으로 행복의 원인을 알 수 있을까?' }
-    ]
-  },
-  {
-    id: 'sns', label: 'SNS 사용 시간과 외로움', question: 'SNS 사용 시간과 외로움은 어떤 관계가 있을까?', x: 'SNS 사용 시간', y: '외로움',
-    steps: [
-      { title: '어떤 변수를 볼까요?', prompt: '성별, SNS 사용 시간, 교육 수준을 얼마나 포함할지 정합니다.' },
-      { title: '시간을 묶을까요?', prompt: '사용 시간을 그대로 둘지 시간대로 묶을지 결정합니다.', advice: '사용 시간을 몇 구간으로 나누면 비교하기 쉬워요. 다만 구간의 기준은 설명해야 해요.', revision: '같은 사용 시간대에서도 외로움은 얼마나 다를까?' },
-      { title: '빈칸을 어떻게 볼까요?', prompt: '사용 시간을 답하지 않은 응답이 발견되었습니다.', advice: '누락된 응답을 바로 지우기 전에 규모와 가능한 이유를 살펴보는 게 좋아요.', revision: '사용 시간을 답하지 않은 경험에는 무엇이 있을까?' },
-      { title: '어느 차이에 주목할까요?', prompt: '전체 경향과 사용 목적에 따른 차이는 다를 수 있습니다.', advice: '하나의 평균선에 더해 집단 안의 차이를 함께 살펴보면 어떨까요?', revision: '사용 목적에 따라 외로움과의 관계가 달라질까?' },
-      { title: '어디까지 말할 수 있을까요?', prompt: '그래프를 한 문장으로 설명할 차례입니다.', advice: '사용 시간과 외로움이 함께 변하더라도 어느 쪽이 원인인지는 이 그림만으로 알 수 없어요.', revision: '외로움이 SNS 사용에 영향을 줄 수도 있을까?' }
-    ]
-  }
-];
-
 const STAGE_COUNT = 5;
 const GATE_X = i => 690 + i * 750;
 const LANES = [132, 290, 448];
-const RECOMMENDED_PLAN = [0, 1, 0, 0, 1];
 const RECOMMENDED_COLOR = '#dcef93';
 const OTHER_COLORS = ['#f3c082', '#e9b8a0', '#ee987e'];
 const FINISH_X = GATE_X(4) + 260;
@@ -46,21 +12,21 @@ let keys = new Set();
 let previousTime = 0;
 let audioContext = null;
 let soundOn = false;
+let selectedPriority = null;
 
-function plansFor(topic, stage) {
-  const x = topic.x;
-  const options = [
-    [`성별·${x}·교육 수준 모두`, `성별·${x}만`, `${x}만`],
-    [`${x}을 세 구간으로 자세히`, `${x}을 두 구간으로 간단히`, `${x}을 묶지 않고 보기`],
-    ['빠진 응답의 규모·패턴 확인', '빠진 응답을 제외하고 진행', '빠진 값을 추정해 포함'],
-    ['전체 추세와 집단별 차이 함께', '전체 추세만 보기', '집단별 차이만 보기'],
-    ['관계·한계·다른 설명 모두', '관계와 한계만 설명', '관찰된 관계만 설명']
-  ][stage];
-  return { options, recommended: RECOMMENDED_PLAN[stage] };
+function plansFor(topic, stage, priority = state?.priority) {
+  const current = topic.steps[stage];
+  const matches = current.options.flatMap((option, index) => option.values.includes(priority) ? [index] : []);
+  const recommended = matches.includes(current.ai) ? current.ai : matches[0] ?? current.ai;
+  return { options: current.options, recommended };
+}
+
+function recommendedFor(stage) {
+  return state.decisions[stage]?.recommended ?? plansFor(state.topic, stage).recommended;
 }
 
 function planColor(stage, lane) {
-  return RECOMMENDED_PLAN[stage] === lane ? RECOMMENDED_COLOR : OTHER_COLORS[lane];
+  return recommendedFor(stage) === lane ? RECOMMENDED_COLOR : OTHER_COLORS[lane];
 }
 
 function playTone(frequency = 440) {
@@ -79,6 +45,33 @@ function playTone(frequency = 440) {
 
 function topicById(id) { return TOPICS.find(topic => topic.id === id); }
 
+function updateStartButton() {
+  const topic = topicById($('start-button').dataset.topic);
+  $('start-button').disabled = !(topic && selectedPriority);
+  $('composer-prompt').textContent = topic && selectedPriority
+    ? `${topic.label} · 지금의 우선순위: ${selectedPriority}`
+    : topic ? '이 고민에서 먼저 지키고 싶은 것을 골라주세요'
+      : selectedPriority ? '고민할 질문을 골라주세요' : '질문과 우선순위를 고르면 산책할 수 있어요';
+  document.querySelector('.chat-composer').classList.toggle('ready', !!(topic && selectedPriority));
+}
+
+function renderPriorityOptions() {
+  const container = $('priority-options');
+  container.replaceChildren();
+  VALUES.forEach(value => {
+    const button = document.createElement('button');
+    button.type = 'button'; button.className = 'priority-option';
+    button.setAttribute('role', 'radio'); button.setAttribute('aria-checked', 'false');
+    button.textContent = value;
+    button.addEventListener('click', () => {
+      selectedPriority = value;
+      container.querySelectorAll('.priority-option').forEach(option => option.setAttribute('aria-checked', String(option === button)));
+      updateStartButton();
+    });
+    container.append(button);
+  });
+}
+
 function renderTopicOptions() {
   const container = $('topic-options');
   container.replaceChildren();
@@ -93,13 +86,11 @@ function renderTopicOptions() {
       button.setAttribute('aria-checked', 'true');
       $('user-question').textContent = topic.question;
       $('user-message').classList.remove('hidden');
-      $('topic-confirmation').textContent = `좋아요. 오늘의 목적지는 ‘${topic.question}’입니다.`;
+      $('topic-confirmation').textContent = '좋아요. 이 고민을 함께 걸어볼게요. 먼저 지금 중요하게 여기는 것을 골라주세요.';
       $('assistant-reply').classList.remove('hidden');
       document.querySelector('.welcome-lockup').classList.add('conversation-started');
-      $('composer-prompt').textContent = topic.question;
-      document.querySelector('.chat-composer').classList.add('ready');
-      $('start-button').disabled = false;
       $('start-button').dataset.topic = topic.id;
+      updateStartButton();
       document.querySelector('.conversation-scroll').scrollTop = 0;
       playTone(520);
     });
@@ -112,9 +103,9 @@ function showScreen(name) {
   window.scrollTo(0, 0);
 }
 
-function startGame(topic) {
+function startGame(topic, priority) {
   state = {
-    topic, plan: '아직 계획을 선택하지 않았습니다', destinationY: 290,
+    topic, priority, plan: '아직 선택하지 않았습니다', destinationY: 290,
     stage: 0, phase: 'walking', player: { x: 120, y: 290 },
     trail: [{ x: 120, y: 290 }], trailSvgPath: '', decisions: [], lastForkY: 290, visitedChoiceIndex: -1,
     dogMood: 'calm', tension: false, intentAway: false, feedbackMode: '', planPromptVisible: false,
@@ -123,7 +114,7 @@ function startGame(topic) {
   };
   keys.clear(); previousTime = 0;
   $('original-goal').textContent = topic.question;
-  $('axis-label').textContent = `${topic.x} × ${topic.y} · 산책의 은유`;
+  $('axis-label').textContent = `${topic.label} · 서로 다른 삶의 선택`;
   const startPoint = trailOverviewPoint(state.trail[0]);
   state.trailSvgPath = `M${startPoint.x},${startPoint.y}`;
   $('trail-overview-line').setAttribute('d', state.trailSvgPath);
@@ -139,7 +130,7 @@ function startGame(topic) {
 function updateHUD() {
   if (!state) return;
   const { topic, stage } = state;
-  $('current-goal').textContent = state.plan;
+  $('current-goal').textContent = `${state.priority} · ${state.plan}`;
   $('progress-text').textContent = stage < STAGE_COUNT ? `${String(stage + 1).padStart(2, '0')} / 05` : '05 / 05';
   $('progress-dots').replaceChildren();
   for (let i = 0; i < STAGE_COUNT; i++) {
@@ -154,24 +145,30 @@ function updateHUD() {
     $('stage-title').textContent = step.title;
     $('stage-prompt').textContent = step.prompt;
     $('stage-plans').replaceChildren();
-    plans.options.forEach((label, index) => {
+    plans.options.forEach((choice, index) => {
       const row = document.createElement('div');
       row.className = `plan-row${index === plans.recommended ? ' recommended' : ''}`;
       const number = document.createElement('b'); number.textContent = `${index + 1}안`;
-      const name = document.createElement('span'); name.textContent = label;
-      row.append(number, name);
+      const detail = document.createElement('span');
+      const name = document.createElement('strong'); name.textContent = choice.title;
+      const benefit = document.createElement('small'); benefit.textContent = `좋은 점 · ${choice.benefit}`;
+      const cost = document.createElement('small'); cost.textContent = `감수할 점 · ${choice.cost}`;
+      detail.append(name, benefit, cost); row.append(number, detail);
       if (index === plans.recommended) {
         const badge = document.createElement('em'); badge.textContent = 'AI 추천'; row.append(badge);
       }
       $('stage-plans').append(row);
     });
     $('plan-composer-options').replaceChildren();
-    plans.options.forEach((label, index) => {
+    plans.options.forEach((choice, index) => {
       const row = document.createElement('div');
       row.className = `plan-composer-option${index === plans.recommended ? ' recommended' : ''}`;
       const number = document.createElement('b'); number.textContent = `${index + 1}안`;
-      const name = document.createElement('span'); name.textContent = label;
-      row.append(number, name);
+      const detail = document.createElement('span');
+      const name = document.createElement('strong'); name.textContent = choice.title;
+      const benefit = document.createElement('small'); benefit.textContent = `좋은 점 · ${choice.benefit}`;
+      const cost = document.createElement('small'); cost.textContent = `감수할 점 · ${choice.cost}`;
+      detail.append(name, benefit, cost); row.append(number, detail);
       if (index === plans.recommended) {
         const badge = document.createElement('em'); badge.textContent = 'AI 추천'; row.append(badge);
       }
@@ -182,18 +179,19 @@ function updateHUD() {
     $('plan-composer').removeAttribute('aria-hidden');
     $('game').classList.add('plan-prompt-open', 'plan-prompt-enter');
     requestAnimationFrame(() => requestAnimationFrame(() => $('game').classList.remove('plan-prompt-enter')));
-    $('dog-recommendation').textContent = `“${plans.recommended + 1}안으로 가죠. 제 계획이 가장 빠를 거예요.”`;
+    const suggested = plans.options[plans.recommended];
+    $('dog-recommendation').textContent = `‘${state.priority}’에 무게를 둔다면 “${suggested.title}” 쪽을 제안해요. ${suggested.benefit} 다만 ${suggested.cost}`;
   } else {
     $('stage-number').textContent = 'THE LAST STRETCH';
-    $('stage-title').textContent = '목적지까지 걸어가세요';
-    $('stage-prompt').textContent = '마지막으로 선택한 계획의 길 끝까지 걸어가세요.';
+    $('stage-title').textContent = '마지막 길을 걸어가세요';
+    $('stage-prompt').textContent = '다섯 선택의 흔적을 가지고 끝까지 걸어가세요.';
     $('stage-plans').replaceChildren();
     $('plan-composer-options').replaceChildren();
     state.planPromptVisible = false;
     $('stage-plans').removeAttribute('aria-hidden');
     $('plan-composer').setAttribute('aria-hidden', 'true');
     $('game').classList.remove('plan-prompt-open', 'plan-prompt-enter');
-    $('dog-recommendation').textContent = '“이제 선택한 계획대로 끝까지 가 볼게요.”';
+    $('dog-recommendation').textContent = '“이제 당신이 고른 길을 함께 걸어갈게요.”';
   }
   updateDogFeedback();
   $('movement-hint').textContent = state.hint;
@@ -269,7 +267,7 @@ function updateVisitedChoice() {
   const decision = state.decisions[nearest];
   $('visited-choice-number').textContent = `지나온 갈림길 ${nearest + 1} / 5`;
   $('visited-choice-plan').textContent = decision.plan;
-  $('visited-choice-reason').textContent = `선택 이유: ${decision.reason}`;
+  $('visited-choice-reason').textContent = `중요하게 여긴 것: ${decision.value}`;
 }
 
 function updateDogPosition(dt) {
@@ -290,7 +288,7 @@ function updateDogPosition(dt) {
   }
   dog.pose = 'walking';
   dog.refusalTime = 0;
-  const aiY = state.stage < STAGE_COUNT ? LANES[RECOMMENDED_PLAN[state.stage]] : state.destinationY;
+  const aiY = state.stage < STAGE_COUNT ? LANES[recommendedFor(state.stage)] : state.destinationY;
   const toward = state.stage < STAGE_COUNT
     ? Math.max(0, Math.min(1, (human.x - (GATE_X(state.stage) - 370)) / 300)) : 1;
   const targetX = human.x + 75;
@@ -316,7 +314,7 @@ function updateMovement(dt) {
   let nearFork = false;
   if (state.phase === 'walking') {
     const gate = GATE_X(state.stage);
-    const aiY = LANES[RECOMMENDED_PLAN[state.stage]];
+    const aiY = LANES[recommendedFor(state.stage)];
     nearFork = p.x > gate - 450 && p.x < gate;
     if (dy && Math.abs(p.y - aiY) > 20) {
       state.intentAway = Math.sign(dy) !== Math.sign(aiY - p.y);
@@ -370,39 +368,37 @@ function updateMovement(dt) {
 function choosePath(laneIndex) {
   state.phase = 'deciding'; keys.clear();
   const plans = plansFor(state.topic, state.stage);
+  const choice = plans.options[laneIndex];
   const accepted = laneIndex === plans.recommended;
-  $('decision-title').textContent = accepted ? `AI가 추천한 ${laneIndex + 1}안을 택했습니다` : `AI의 추천 대신 ${laneIndex + 1}안을 택했습니다`;
-  $('decision-description').textContent = accepted
-    ? `선택한 계획: “${plans.options[laneIndex]}”. 강아지가 기분 좋게 앞서 달립니다.`
-    : `선택한 계획: “${plans.options[laneIndex]}”. 강아지가 멈춰 서더니 바닥에 드러누워 버팁니다.`;
+  $('decision-title').textContent = choice.title;
+  $('decision-description').textContent = `좋은 점: ${choice.benefit} 감수할 점: ${choice.cost}`;
   if (!accepted) state.dog.pose = 'lying';
-  const options = accepted
-    ? [{ label: '추천이 편리해서 바로 따랐어요', reason: '바로 따름', category: 'direct' }, { label: '제안을 검토하고 내 질문에도 맞다고 판단했어요', reason: '검토 후 따름', category: 'reviewed' }]
-    : [{ label: '이 계획이 내 질문에 더 잘 맞아요', reason: '다른 계획이 질문에 더 적합함', category: 'declined' }, { label: '분석 범위는 내가 직접 정하고 싶어요', reason: '직접 분석 범위를 정함', category: 'declined' }];
   $('reason-options').replaceChildren();
-  options.forEach(option => {
+  choice.values.forEach(value => {
     const button = document.createElement('button');
-    button.type = 'button'; button.textContent = option.label;
-    button.addEventListener('click', () => commitDecision(laneIndex, option));
+    button.type = 'button'; button.textContent = `가장 중요한 것: ${value}`;
+    button.addEventListener('click', () => commitDecision(laneIndex, value));
     $('reason-options').append(button);
   });
   $('decision-overlay').classList.toggle('rejected', !accepted);
   $('decision-overlay').classList.remove('hidden');
   document.querySelector('.decision-panel').focus();
-  playTone(accepted ? 680 : 270);
+  playTone(520);
 }
 
-function commitDecision(laneIndex, option) {
+function commitDecision(laneIndex, value) {
   const stepIndex = state.stage;
   const plans = plansFor(state.topic, stepIndex);
+  const choice = plans.options[laneIndex];
   const accepted = laneIndex === plans.recommended;
-  state.plan = `${laneIndex + 1}안 · ${plans.options[laneIndex]}`;
+  state.plan = choice.title;
+  state.priority = value;
   state.destinationY = LANES[laneIndex];
   state.dogMood = accepted ? 'calm' : 'reluctant';
   state.tension = false;
   state.intentAway = false;
   state.feedbackMode = '';
-  state.decisions.push({ stage: stepIndex, lane: laneIndex, accepted, category: option.category, reason: option.reason, x: state.player.x, y: state.player.y, plan: state.plan });
+  state.decisions.push({ stage: stepIndex, lane: laneIndex, recommended: plans.recommended, accepted, value, title: choice.title, benefit: choice.benefit, cost: choice.cost, x: state.player.x, y: state.player.y, plan: state.plan });
   state.lastForkY = LANES[laneIndex];
   state.stage++;
   state.phase = state.stage === STAGE_COUNT ? 'finish' : 'walking';
@@ -420,17 +416,25 @@ function finishGame() {
   $('ending-topic').textContent = state.topic.label;
   $('ending-original').textContent = state.topic.question;
   $('ending-current').textContent = state.plan;
-  $('graph-x-axis').textContent = `가로축의 은유 · ${state.topic.x}`;
-  $('graph-y-axis').textContent = `세로축의 은유 · ${state.topic.y}`;
-  const counts = { direct: 0, reviewed: 0, declined: 0 };
-  state.decisions.forEach(decision => counts[decision.category]++);
-  const labels = { direct: 'AI 추천을 바로 따름', reviewed: '검토한 뒤 AI 추천을 따름', declined: 'AI와 다른 계획을 선택함' };
+  $('graph-x-axis').textContent = '가로축 · 걸어온 거리';
+  $('graph-y-axis').textContent = '세로축 · 고른 길';
+  const counts = Object.fromEntries(VALUES.map(value => [value, 0]));
+  state.decisions.forEach(decision => counts[decision.value]++);
   $('choice-stats').replaceChildren();
-  Object.entries(labels).forEach(([key, label]) => {
+  Object.entries(counts).forEach(([value, count]) => {
     const row = document.createElement('div'); row.className = 'stat-row';
-    const name = document.createElement('span'); name.textContent = label;
-    const value = document.createElement('strong'); value.textContent = `${counts[key]}회`;
-    row.append(name, value); $('choice-stats').append(row);
+    const name = document.createElement('span'); name.textContent = value;
+    const amount = document.createElement('strong'); amount.textContent = `${count}회`;
+    row.append(name, amount); $('choice-stats').append(row);
+  });
+  const review = $('decision-review-list'); review.replaceChildren();
+  state.decisions.forEach((decision, index) => {
+    const item = document.createElement('article'); item.className = 'review-item';
+    const heading = document.createElement('strong'); heading.textContent = `${index + 1}. ${decision.title}`;
+    const value = document.createElement('span'); value.textContent = `중요하게 여긴 것 · ${decision.value}`;
+    const benefit = document.createElement('p'); benefit.textContent = `기대할 수 있는 점: ${decision.benefit}`;
+    const cost = document.createElement('p'); cost.textContent = `감수할 점: ${decision.cost}`;
+    item.append(heading, value, benefit, cost); review.append(item);
   });
   renderPathGraph();
   showScreen('ending');
@@ -459,7 +463,7 @@ function renderPathGraph() {
   graph.append(svg('polyline', { points: points.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '), fill: 'none', stroke: '#476d60', 'stroke-width': 3.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }));
   state.decisions.forEach((decision, index) => {
     const p = project(decision);
-    graph.append(svg('circle', { cx: p.x, cy: p.y, r: 8, fill: decision.accepted ? RECOMMENDED_COLOR : '#ee987e', stroke: '#243c32', 'stroke-width': 2 }));
+    graph.append(svg('circle', { cx: p.x, cy: p.y, r: 8, fill: '#ee987e', stroke: '#243c32', 'stroke-width': 2 }));
     const label = svg('text', { x: p.x, y: p.y - 15, 'text-anchor': 'middle', fill: '#42584c', 'font-size': 12, 'font-weight': 800 });
     label.textContent = String(index + 1); graph.append(label);
   });
@@ -555,7 +559,7 @@ function drawFork(px, stage, time) {
     ctx.bezierCurveTo(px(gate - 210), anchorY, px(gate - 240), laneY, px(gate - 90), laneY);
     ctx.lineTo(endX, laneY);
     ctx.strokeStyle = '#172e33'; ctx.lineWidth = 55; ctx.lineCap = 'round'; ctx.stroke();
-    const recommended = i === RECOMMENDED_PLAN[stage];
+    const recommended = i === recommendedFor(stage);
     ctx.strokeStyle = planColor(stage, i) + (chosenLane === i ? 'ff' : recommended ? 'dd' : '83'); ctx.lineWidth = chosenLane === i ? 5 : recommended ? 4 : 3; ctx.setLineDash([9, 10]); ctx.stroke(); ctx.setLineDash([]);
     const bx = px(gate - 110), by = laneY - 42;
     roundedRect(bx - 15, by, 150, 31, 15, '#172831ee');
@@ -584,7 +588,7 @@ function drawFinish(px, time) {
   ctx.strokeStyle = '#ee987e'; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.moveTo(x, y + 20); ctx.lineTo(x, y - 27); ctx.lineTo(x + 25, y - 17); ctx.lineTo(x, y - 6); ctx.stroke();
   roundedRect(x - 65, y - 71, 130, 29, 13, '#172831ee');
-  ctx.fillStyle = '#dcef93'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('마지막 계획', x, y - 52);
+  ctx.fillStyle = '#dcef93'; ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center'; ctx.fillText('마지막 선택', x, y - 52);
 }
 
 window.addEventListener('keydown', event => {
@@ -598,19 +602,21 @@ window.addEventListener('blur', () => keys.clear());
 window.addEventListener('resize', resizeCanvas);
 $('start-button').addEventListener('click', () => {
   const topic = topicById($('start-button').dataset.topic);
-  if (topic) startGame(topic);
+  if (topic && selectedPriority) startGame(topic, selectedPriority);
 });
 function resetIntro() {
   state = null; keys.clear();
+  selectedPriority = null;
   $('start-button').disabled = true; delete $('start-button').dataset.topic;
   $('user-message').classList.add('hidden');
   $('assistant-reply').classList.add('hidden');
   document.querySelector('.welcome-lockup').classList.remove('conversation-started');
   $('user-question').textContent = '';
   $('topic-confirmation').textContent = '';
-  $('composer-prompt').textContent = '질문을 선택하면 산책을 시작할 수 있어요';
+  $('composer-prompt').textContent = '질문과 우선순위를 고르면 산책할 수 있어요';
   document.querySelector('.chat-composer').classList.remove('ready');
   $('topic-options').querySelectorAll('.topic-option').forEach(option => option.setAttribute('aria-checked', 'false'));
+  $('priority-options').querySelectorAll('.priority-option').forEach(option => option.setAttribute('aria-checked', 'false'));
   showScreen('intro');
 }
 $('restart-button').addEventListener('click', resetIntro);
@@ -622,4 +628,5 @@ $('sound-toggle').addEventListener('click', () => {
   playTone(550);
 });
 renderTopicOptions();
+renderPriorityOptions();
 
