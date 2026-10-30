@@ -106,3 +106,9 @@
 #trail-overview-current{fill:#ee987e;stroke:#f7efd8;stroke-width:2}
 @media(max-width:600px){.trail-overview{top:50px;left:16px;width:185px;padding:8px 10px}.trail-overview svg{height:55px}}
 
+/* The old junction stays in the world and reveals its recorded choice on return. */
+.visited-choice{display:grid;gap:5px;padding:12px 14px;border:1px solid #a0be91;border-radius:12px;background:#dcef9314}
+.visited-choice span{font-size:10px;font-weight:800;letter-spacing:.08em;color:#dcef93}
+.visited-choice strong{font-size:12px;line-height:1.4;color:#f0f4e7}
+.visited-choice small{font-size:10px;line-height:1.4;color:#bbd0c2}
+
