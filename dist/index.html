@@ -51,6 +51,15 @@
         <div class="play-area">
           <div class="play-topline"><span id="axis-label"></span><span>지나온 길은 그대로 남습니다</span></div>
           <canvas id="game-canvas" aria-label="세 갈래 산책길"></canvas>
+          <div class="trail-overview" role="img" aria-label="이동 중에도 계속 남는 전체 산책 경로">
+            <div class="trail-overview-heading"><strong>지나온 길</strong><span>전체 경로</span></div>
+            <svg viewBox="0 0 300 92" aria-hidden="true">
+              <path class="trail-overview-guide" d="M16 46 H284" />
+              <path id="trail-overview-line" d="" />
+              <circle class="trail-overview-start" cx="16" cy="46" r="3" />
+              <circle id="trail-overview-current" cx="16" cy="46" r="5" />
+            </svg>
+          </div>
           <div id="plan-composer" class="plan-composer" aria-label="AI가 제시한 분석 계획">
             <div class="plan-composer-heading"><span class="composer-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p>세 가지 계획을 준비했어요. 어느 길로 갈까요?</p></div></div>
             <div id="plan-composer-options" class="plan-composer-options"></div>
