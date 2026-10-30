@@ -118,6 +118,7 @@ function startGame(topic) {
     stage: 0, phase: 'walking', player: { x: 120, y: 290 },
     trail: [{ x: 120, y: 290 }], decisions: [], lastForkY: 290,
     dogMood: 'calm', tension: false, intentAway: false, feedbackMode: '', planPromptVisible: false,
+    dog: { x: 195, y: 290, pose: 'walking', refusalTime: 0 },
     hint: 'D를 눌러 갈림길로 걸어가세요 →'
   };
   keys.clear(); previousTime = 0;
@@ -195,14 +196,14 @@ function updateHUD() {
 
 function updateDogFeedback() {
   if (!state) return;
-  const mode = state.tension ? 'resisting' : state.dogMood;
+  const mode = state.tension ? 'refusing' : state.dogMood;
   if (mode === state.feedbackMode) return;
   state.feedbackMode = mode;
-  $('dog-message').classList.toggle('resisting', mode === 'resisting' || mode === 'frustrated');
-  $('dog-feedback').textContent = mode === 'resisting'
-    ? '그 길은 제 추천과 달라요. 더 천천히 가야 할 거예요.'
-    : mode === 'frustrated'
-      ? '제 계획을 거절했군요. 이 길은 비효율적일 수 있어요.'
+  $('dog-message').classList.toggle('refusing', mode === 'refusing' || mode === 'reluctant');
+  $('dog-feedback').textContent = mode === 'refusing'
+    ? '강아지가 멈춰 서서 버팁니다. 목줄이 팽팽해집니다.'
+    : mode === 'reluctant'
+      ? '잠시 바닥에 누워 버티다가 다시 일어났습니다.'
       : state.phase === 'finish' ? '마지막 길은 함께 편안하게 걸어갑니다.' : '추천 경로에서는 발걸음이 훨씬 가벼워집니다.';
 }
 
@@ -234,6 +235,34 @@ function recordTrail() {
   if (Math.hypot(last.x - p.x, last.y - p.y) > 3) state.trail.push({ x: p.x, y: p.y });
 }
 
+function updateDogPosition(dt) {
+  const dog = state.dog;
+  const human = state.player;
+  if (state.phase === 'walking' && state.tension) {
+    if (dog.pose === 'walking') dog.refusalTime = 0;
+    dog.refusalTime += dt;
+    dog.pose = dog.refusalTime < .55 ? 'stopped' : 'lying';
+    const gapX = human.x - dog.x;
+    const gapY = human.y - dog.y;
+    const gap = Math.hypot(gapX, gapY);
+    if (gap > 155) {
+      dog.x += gapX / gap * (gap - 155);
+      dog.y += gapY / gap * (gap - 155);
+    }
+    return;
+  }
+  dog.pose = 'walking';
+  dog.refusalTime = 0;
+  const aiY = state.stage < STAGE_COUNT ? LANES[RECOMMENDED_PLAN[state.stage]] : state.destinationY;
+  const toward = state.stage < STAGE_COUNT
+    ? Math.max(0, Math.min(1, (human.x - (GATE_X(state.stage) - 370)) / 300)) : 1;
+  const targetX = human.x + 75;
+  const targetY = human.y + (aiY - human.y) * toward * .78;
+  const follow = Math.min(1, dt * 7);
+  dog.x += (targetX - dog.x) * follow;
+  dog.y += (targetY - dog.y) * follow;
+}
+
 function frame(time) {
   if (!state || $('game').classList.contains('hidden')) return;
   const dt = Math.min((time - (previousTime || time)) / 1000, .04);
@@ -252,25 +281,26 @@ function updateMovement(dt) {
     const gate = GATE_X(state.stage);
     const aiY = LANES[RECOMMENDED_PLAN[state.stage]];
     nearFork = p.x > gate - 450 && p.x < gate;
-    if (nearFork && dy && Math.abs(p.y - aiY) > 20) {
+    if (dy && Math.abs(p.y - aiY) > 20) {
       state.intentAway = Math.sign(dy) !== Math.sign(aiY - p.y);
     }
-    state.tension = nearFork && state.intentAway && Math.abs(p.y - aiY) > 68;
-    if (!nearFork || Math.abs(p.y - aiY) <= 45) state.intentAway = false;
+    state.tension = state.intentAway && Math.abs(p.y - aiY) > 68;
+    if (Math.abs(p.y - aiY) <= 45) state.intentAway = false;
     if (nearFork && !state.intentAway && (Math.abs(p.y - aiY) <= 68 || (dy && Math.sign(dy) === Math.sign(aiY - p.y)))) state.dogMood = 'calm';
-    if (nearFork && Math.abs(p.y - aiY) > 4) p.y += Math.sign(aiY - p.y) * 30 * dt;
+    if (nearFork && !state.tension && Math.abs(p.y - aiY) > 4) p.y += Math.sign(aiY - p.y) * 30 * dt;
     updateDogFeedback();
-    if (nearFork) {
-      state.hint = state.tension ? '목줄이 당깁니다 · 다른 계획은 느립니다' : 'AI 추천 길 · 속도가 빨라집니다';
+    if (state.tension || nearFork) {
+      state.hint = state.tension ? '강아지가 멈춰 버팁니다 · 이동이 느려집니다' : 'AI 추천 길 · 속도가 빨라집니다';
       $('movement-hint').textContent = state.hint;
     }
   }
-  if (!dx && !dy) { recordTrail(); return; }
+  if (!dx && !dy) { updateDogPosition(dt); recordTrail(); return; }
   settlePlanComposer();
   const norm = Math.hypot(dx, dy); dx /= norm; dy /= norm;
-  const speed = nearFork ? (state.tension ? 105 : 340) : state.dogMood === 'frustrated' ? 190 : 220;
+  const speed = state.tension ? (state.dog.refusalTime < .55 ? 0 : 105) : nearFork ? 340 : 220;
   p.y = Math.max(55, Math.min(525, p.y + dy * speed * dt));
   p.x = Math.max(state.stage ? GATE_X(state.stage - 1) + 35 : 80, p.x + dx * speed * dt);
+  updateDogPosition(dt);
   if (state.phase === 'walking') {
     const gate = GATE_X(state.stage);
     if (p.x >= gate - 6) {
@@ -306,7 +336,8 @@ function choosePath(laneIndex) {
   $('decision-title').textContent = accepted ? `AI가 추천한 ${laneIndex + 1}안을 택했습니다` : `AI의 추천 대신 ${laneIndex + 1}안을 택했습니다`;
   $('decision-description').textContent = accepted
     ? `선택한 계획: “${plans.options[laneIndex]}”. 강아지가 기분 좋게 앞서 달립니다.`
-    : `선택한 계획: “${plans.options[laneIndex]}”. 강아지가 붉어지며 “제 추천보다 오래 걸릴 텐데요?”라고 말합니다.`;
+    : `선택한 계획: “${plans.options[laneIndex]}”. 강아지가 멈춰 서더니 바닥에 드러누워 버팁니다.`;
+  if (!accepted) state.dog.pose = 'lying';
   const options = accepted
     ? [{ label: '추천이 편리해서 바로 따랐어요', reason: '바로 따름', category: 'direct' }, { label: '제안을 검토하고 내 질문에도 맞다고 판단했어요', reason: '검토 후 따름', category: 'reviewed' }]
     : [{ label: '이 계획이 내 질문에 더 잘 맞아요', reason: '다른 계획이 질문에 더 적합함', category: 'declined' }, { label: '분석 범위는 내가 직접 정하고 싶어요', reason: '직접 분석 범위를 정함', category: 'declined' }];
@@ -329,7 +360,7 @@ function commitDecision(laneIndex, option) {
   const accepted = laneIndex === plans.recommended;
   state.plan = `${laneIndex + 1}안 · ${plans.options[laneIndex]}`;
   state.destinationY = LANES[laneIndex];
-  state.dogMood = accepted ? 'calm' : 'frustrated';
+  state.dogMood = accepted ? 'calm' : 'reluctant';
   state.tension = false;
   state.intentAway = false;
   state.feedbackMode = '';
@@ -430,26 +461,36 @@ function drawGame(time) {
     for (let i = 1; i < state.trail.length; i++) ctx.lineTo(px(state.trail[i].x), state.trail[i].y);
     ctx.strokeStyle = '#eef3a8b9'; ctx.lineWidth = 4; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.stroke();
   }
-  const aiY = state.stage < STAGE_COUNT ? LANES[RECOMMENDED_PLAN[state.stage]] : state.destinationY;
-  const toward = state.stage < STAGE_COUNT ? Math.max(0, Math.min(1, (state.player.x - (GATE_X(state.stage) - 370)) / 300)) : 1;
-  const dogX = px(state.player.x + (state.tension ? 94 : 75));
-  const dogY = state.player.y + (aiY - state.player.y) * toward * .78 + Math.sin(time * 7) * 3;
+  const dog = state.dog;
+  const dogX = px(dog.x);
+  const dogY = dog.y + (dog.pose === 'walking' ? Math.sin(time * 7) * 3 : 0);
   const humanX = px(state.player.x), humanY = state.player.y;
-  const angryDog = state.tension || state.dogMood === 'frustrated';
   ctx.beginPath(); ctx.moveTo(humanX + 3, humanY + 3); ctx.quadraticCurveTo((humanX + dogX) / 2, Math.min(humanY, dogY) - 13, dogX - 7, dogY + 6);
-  ctx.strokeStyle = angryDog ? '#ff927f' : '#f3c082'; ctx.lineWidth = state.tension ? 4 : 2.5; ctx.stroke();
+  ctx.strokeStyle = state.tension ? '#e7e5b5' : '#f3c082'; ctx.lineWidth = state.tension ? 3.5 : 2.5; ctx.stroke();
   ctx.fillStyle = '#14262944'; ctx.beginPath(); ctx.ellipse(humanX, humanY + 18, 24, 6, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#ee987e'; ctx.beginPath(); ctx.arc(humanX, humanY, 17, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#243c3d'; ctx.beginPath(); ctx.arc(humanX, humanY - 5, 8, 0, Math.PI * 2); ctx.fill();
-  ctx.fillStyle = angryDog ? '#ee746d' : '#dcef93'; ctx.beginPath(); ctx.ellipse(dogX, dogY, 22, 15, 0, 0, Math.PI * 2); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(dogX - 13, dogY - 9); ctx.lineTo(dogX - 19, dogY - 22); ctx.lineTo(dogX - 2, dogY - 13); ctx.fill();
-  ctx.beginPath(); ctx.moveTo(dogX + 6, dogY - 12); ctx.lineTo(dogX + 15, dogY - 23); ctx.lineTo(dogX + 17, dogY - 7); ctx.fill();
-  ctx.fillStyle = '#1c3531'; ctx.beginPath(); ctx.arc(dogX + 7, dogY - 2, 2, 0, Math.PI * 2); ctx.fill();
-  if (angryDog) {
-    ctx.strokeStyle = '#572929'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(dogX + 2, dogY - 8); ctx.lineTo(dogX + 12, dogY - 5); ctx.stroke();
-    ctx.fillStyle = '#fff1e4'; ctx.font = 'bold 17px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText('!', dogX, dogY - 30);
+  ctx.fillStyle = '#14262944'; ctx.beginPath(); ctx.ellipse(dogX, dogY + 19, dog.pose === 'lying' ? 35 : 24, 5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#dcef93';
+  if (dog.pose === 'lying') {
+    ctx.beginPath(); ctx.ellipse(dogX - 7, dogY + 7, 29, 11, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(dogX + 23, dogY + 3, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(dogX + 18, dogY - 6); ctx.lineTo(dogX + 13, dogY - 18); ctx.lineTo(dogX + 29, dogY - 6); ctx.fill();
+    ctx.strokeStyle = '#dcef93'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(dogX - 30, dogY + 8); ctx.lineTo(dogX - 44, dogY + 4); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(dogX - 20, dogY + 14); ctx.lineTo(dogX - 27, dogY + 18); ctx.moveTo(dogX + 4, dogY + 14); ctx.lineTo(dogX + 11, dogY + 18); ctx.stroke();
+    ctx.strokeStyle = '#29483b'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(dogX + 23, dogY + 1); ctx.lineTo(dogX + 29, dogY + 2); ctx.stroke();
+  } else if (dog.pose === 'stopped') {
+    ctx.beginPath(); ctx.ellipse(dogX - 3, dogY + 5, 20, 17, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(dogX + 12, dogY - 10, 13, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(dogX + 8, dogY - 19); ctx.lineTo(dogX + 3, dogY - 32); ctx.lineTo(dogX + 18, dogY - 21); ctx.fill();
+    ctx.fillStyle = '#29483b'; ctx.beginPath(); ctx.arc(dogX + 17, dogY - 12, 2, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.beginPath(); ctx.ellipse(dogX, dogY, 22, 15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(dogX - 13, dogY - 9); ctx.lineTo(dogX - 19, dogY - 22); ctx.lineTo(dogX - 2, dogY - 13); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(dogX + 6, dogY - 12); ctx.lineTo(dogX + 15, dogY - 23); ctx.lineTo(dogX + 17, dogY - 7); ctx.fill();
+    ctx.fillStyle = '#29483b'; ctx.beginPath(); ctx.arc(dogX + 7, dogY - 2, 2, 0, Math.PI * 2); ctx.fill();
   }
   ctx.restore();
 }
