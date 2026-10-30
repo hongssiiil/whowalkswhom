@@ -45,11 +45,12 @@
           <div class="goal-card original"><span>처음 정한 질문</span><strong id="original-goal"></strong></div>
           <div class="goal-card current"><span>현재 분석 계획</span><strong id="current-goal"></strong></div>
           <div class="stage-card"><span id="stage-number">CROSSROAD 01</span><h2 id="stage-title"></h2><p id="stage-prompt"></p><div id="stage-plans" class="stage-plans" aria-label="세 가지 분석 계획"></div></div>
+          <div id="visited-choice" class="visited-choice hidden" aria-live="polite"><span id="visited-choice-number"></span><strong id="visited-choice-plan"></strong><small id="visited-choice-reason"></small></div>
           <div id="dog-message" class="dog-message"><span class="dog-icon">●<span>⌣</span></span><div><p id="dog-recommendation"></p><small id="dog-feedback" aria-live="polite"></small></div></div>
           <div class="controls"><span class="key-grid"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>움직여 계획을 선택하세요.<br>강아지가 추천하는 길은 더 빠릅니다.</span></div>
         </aside>
         <div class="play-area">
-          <div class="play-topline"><span id="axis-label"></span><span>지나온 길은 그대로 남습니다</span></div>
+          <div class="play-topline"><span id="axis-label"></span><span>지난 갈림길로 돌아가 선택을 확인할 수 있습니다</span></div>
           <canvas id="game-canvas" aria-label="세 갈래 산책길"></canvas>
           <div class="trail-overview" role="img" aria-label="이동 중에도 계속 남는 전체 산책 경로">
             <div class="trail-overview-heading"><strong>지나온 길</strong><span>전체 경로</span></div>
