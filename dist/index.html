@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101627">
-  <meta name="description" content="AI 강아지와 함께 걸으며 누가 방향을 결정했는지 돌아보는 짧은 웹 게임">
+  <meta name="description" content="진로, 주거, 시간의 갈림길에서 무엇을 중요하게 여기는지 돌아보는 짧은 웹 게임">
   <title>Who Walks Whom? — 누가 누구를 산책시키는가?</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -24,15 +24,15 @@
           <header class="intro-topbar"><strong>Who Walks Whom? <span>⌄</span></strong><span>AI와 함께 걷는 짧은 실험</span></header>
           <div class="conversation-scroll">
             <div class="conversation-inner">
-              <div class="welcome-lockup"><span class="welcome-icon">✦</span><p class="intro-overline">WHO WALKS WHOM?</p><h1 id="intro-title">오늘은 어떤 질문을<br>탐색해 볼까요?</h1><p>먼저 당신이 목적지를 정합니다. 산책하는 동안 AI 강아지는 다른 길을 제안할 거예요.</p></div>
+              <div class="welcome-lockup"><span class="welcome-icon">✦</span><p class="intro-overline">WHO WALKS WHOM?</p><h1 id="intro-title">어떤 선택을<br>고민해 볼까요?</h1><p>당신이 중요하게 여기는 것을 먼저 고르세요. AI 강아지는 그 관점에서 한 길을 제안합니다.</p></div>
               <div class="conversation-thread" aria-live="polite">
-                <div class="conversation-message assistant"><span class="message-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p>안녕하세요! 궁금한 질문 하나를 골라주세요. 그 질문을 오늘 산책의 시작점으로 기억해 둘게요.</p></div></div>
+                <div class="conversation-message assistant"><span class="message-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p>안녕하세요! 진로, 집, 시간 중 지금 생각해 보고 싶은 고민을 골라주세요. 세 길의 장단점을 함께 살펴볼게요.</p></div></div>
                 <div id="user-message" class="conversation-message user hidden"><p id="user-question"></p></div>
                 <div id="assistant-reply" class="conversation-message assistant hidden"><span class="message-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p id="topic-confirmation"></p></div></div>
               </div>
             </div>
           </div>
-          <div class="composer-wrap"><div class="composer-inner"><p class="composer-label">추천 질문 중 하나를 선택하세요</p><div id="topic-options" class="topic-options" role="radiogroup" aria-label="탐색할 질문"></div><div class="chat-composer"><span id="composer-prompt">질문을 선택하면 산책을 시작할 수 있어요</span><button id="start-button" type="button" disabled>산책 시작 <span aria-hidden="true">↗</span></button></div><p class="composer-note">선택에 정답은 없습니다. 갈림길마다 스스로 판단해 보세요.</p></div></div>
+          <div class="composer-wrap"><div class="composer-inner"><p class="composer-label">오늘 고민할 질문을 선택하세요</p><div id="topic-options" class="topic-options" role="radiogroup" aria-label="탐색할 질문"></div><p class="composer-label priority-label">지금 나에게 가장 중요한 것은?</p><div id="priority-options" class="priority-options" role="radiogroup" aria-label="처음 우선순위"></div><div class="chat-composer"><span id="composer-prompt">질문과 우선순위를 고르면 산책할 수 있어요</span><button id="start-button" type="button" disabled>산책 시작 <span aria-hidden="true">↗</span></button></div><p class="composer-note">우선순위는 갈림길마다 달라질 수 있어요. 어떤 길에도 정답은 없습니다.</p></div></div>
         </div>
       </div>
     </section>
@@ -42,12 +42,12 @@
       <div class="game-layout">
         <aside class="game-sidebar">
           <p class="sidebar-kicker">YOUR COMPASS</p>
-          <div class="goal-card original"><span>처음 정한 질문</span><strong id="original-goal"></strong></div>
-          <div class="goal-card current"><span>현재 분석 계획</span><strong id="current-goal"></strong></div>
-          <div class="stage-card"><span id="stage-number">CROSSROAD 01</span><h2 id="stage-title"></h2><p id="stage-prompt"></p><div id="stage-plans" class="stage-plans" aria-label="세 가지 분석 계획"></div></div>
+          <div class="goal-card original"><span>처음 정한 고민</span><strong id="original-goal"></strong></div>
+          <div class="goal-card current"><span>지금 중요하게 여기는 것</span><strong id="current-goal"></strong></div>
+          <div class="stage-card"><span id="stage-number">CROSSROAD 01</span><h2 id="stage-title"></h2><p id="stage-prompt"></p><div id="stage-plans" class="stage-plans" aria-label="세 가지 선택지와 고려할 점"></div></div>
           <div id="visited-choice" class="visited-choice hidden" aria-live="polite"><span id="visited-choice-number"></span><strong id="visited-choice-plan"></strong><small id="visited-choice-reason"></small></div>
           <div id="dog-message" class="dog-message"><span class="dog-icon">●<span>⌣</span></span><div><p id="dog-recommendation"></p><small id="dog-feedback" aria-live="polite"></small></div></div>
-          <div class="controls"><span class="key-grid"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>움직여 계획을 선택하세요.<br>강아지가 추천하는 길은 더 빠릅니다.</span></div>
+          <div class="controls"><span class="key-grid"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span><span>움직여 길을 선택하세요.<br>강아지의 추천은 한 관점일 뿐이에요.</span></div>
         </aside>
         <div class="play-area">
           <div class="play-topline"><span id="axis-label"></span><span>지난 갈림길로 돌아가 선택을 확인할 수 있습니다</span></div>
@@ -61,26 +61,27 @@
               <circle id="trail-overview-current" cx="16" cy="46" r="5" />
             </svg>
           </div>
-          <div id="plan-composer" class="plan-composer" aria-label="AI가 제시한 분석 계획">
-            <div class="plan-composer-heading"><span class="composer-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p>세 가지 계획을 준비했어요. 어느 길로 갈까요?</p></div></div>
+          <div id="plan-composer" class="plan-composer" aria-label="세 가지 선택지와 고려할 점">
+            <div class="plan-composer-heading"><span class="composer-avatar" aria-hidden="true">✦</span><div><strong>AI 산책 동반자</strong><p>세 길에는 서로 다른 이점과 감수할 점이 있어요.</p></div></div>
             <div id="plan-composer-options" class="plan-composer-options"></div>
-            <small>WASD로 움직이면 이 계획은 왼쪽에 남습니다.</small>
+            <small>WASD로 움직이면 선택지는 왼쪽에 남습니다.</small>
           </div>
-          <div class="play-footer"><div class="legend"><span><i class="legend-ai"></i> AI 추천 계획</span><span><i class="legend-origin"></i> 다른 계획</span><span><i class="legend-revise"></i> 강아지의 버티기</span></div><span id="movement-hint">D를 눌러 갈림길로 걸어가세요 →</span></div>
+          <div class="play-footer"><div class="legend"><span><i class="legend-ai"></i> AI가 추천한 길</span><span><i class="legend-origin"></i> 다른 가능성</span><span><i class="legend-revise"></i> 강아지의 버티기</span></div><span id="movement-hint">D를 눌러 갈림길로 걸어가세요 →</span></div>
         </div>
       </div>
       <div id="decision-overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="decision-title">
-        <div class="decision-panel" tabindex="-1"><p class="eyebrow">YOUR CHOICE</p><h2 id="decision-title"></h2><p id="decision-description"></p><p class="reason-heading">이 길을 고른 이유는 무엇인가요?</p><div id="reason-options" class="reason-options"></div></div>
+        <div class="decision-panel" tabindex="-1"><p class="eyebrow">YOUR CHOICE</p><h2 id="decision-title"></h2><p id="decision-description"></p><p class="reason-heading">이 선택에서 무엇을 가장 중요하게 여기나요?</p><div id="reason-options" class="reason-options"></div></div>
       </div>
     </section>
 
     <section id="ending" class="screen ending-screen hidden" aria-labelledby="ending-title">
-      <div class="ending-shell"><div class="ending-header"><span class="eyebrow">THE WALK IS COMPLETE</span><span>WHO WALKS WHOM?</span></div><h1 id="ending-title">그래프는 완성되었습니다.<br><em>그 과정의 결정들도 당신의 것이었나요?</em></h1><p class="ending-lead">이 선은 데이터 분석 결과가 아닙니다. 당신이 다섯 번의 갈림길을 지나며 실제로 걸은 선택의 흔적입니다.</p>
-        <div class="ending-grid"><div class="chart-card"><div class="card-heading"><div><span>01 / THE PATH</span><h2>YOUR DECISION PATH</h2></div><span id="ending-topic"></span></div><svg id="path-graph" viewBox="0 0 800 390" role="img" aria-label="플레이어가 걸어온 경로 그래프"></svg><div class="chart-note"><span id="graph-x-axis"></span><span id="graph-y-axis"></span></div></div><div class="summary-card"><span>02 / THE CHOICES</span><h2>누가 방향을 골랐을까요?</h2><div id="choice-stats" class="choice-stats"></div><div class="summary-goals"><p><span>처음의 질문</span><strong id="ending-original"></strong></p><p><span>마지막 분석 계획</span><strong id="ending-current"></strong></p></div></div></div>
-        <div class="ending-bottom"><p>AI의 제안을 따르는 것과 판단을 맡기는 것은 어떻게 다를까요?</p><button id="restart-button" class="primary-button">다시 산책하기 <span aria-hidden="true">↗</span></button></div>
+      <div class="ending-shell"><div class="ending-header"><span class="eyebrow">THE WALK IS COMPLETE</span><span>WHO WALKS WHOM?</span></div><h1 id="ending-title">길은 여기까지 이어졌습니다.<br><em>무엇을 지키며 걸었나요?</em></h1><p class="ending-lead">이 선은 정답이나 점수가 아닙니다. 다섯 번의 갈림길에서 당신이 직접 움직인 흔적입니다.</p>
+        <div class="ending-grid"><div class="chart-card"><div class="card-heading"><div><span>01 / THE PATH</span><h2>YOUR DECISION PATH</h2></div><span id="ending-topic"></span></div><svg id="path-graph" viewBox="0 0 800 390" role="img" aria-label="플레이어가 걸어온 경로 그래프"></svg><div class="chart-note"><span id="graph-x-axis"></span><span id="graph-y-axis"></span></div></div><div class="summary-card"><span>02 / WHAT MATTERED</span><h2>무엇을 중요하게 여겼나요?</h2><div id="choice-stats" class="choice-stats"></div><div class="summary-goals"><p><span>처음의 고민</span><strong id="ending-original"></strong></p><p><span>마지막 선택</span><strong id="ending-current"></strong></p></div></div></div><div class="decision-review"><h2>다섯 갈림길 돌아보기</h2><div id="decision-review-list"></div></div>
+        <div class="ending-bottom"><p>같은 상황에서도 중요하게 여기는 것이 달라지면 다른 길을 고를 수 있습니다.</p><button id="restart-button" class="primary-button">다시 산책하기 <span aria-hidden="true">↗</span></button></div>
       </div>
     </section>
   </main>
+  <script src="scenarios.js" defer></script>
   <script src="game.js" defer></script>
 </body>
 </html>
