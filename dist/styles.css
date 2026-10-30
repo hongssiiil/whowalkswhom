@@ -94,3 +94,15 @@
 @media(max-width:900px){.plan-composer{bottom:66px}}
 @media(max-width:600px){.plan-composer{bottom:52px;width:calc(100% - 25px);padding:13px}.plan-composer-option{font-size:11px;padding:8px}.plan-composer-heading p{font-size:11px}}
 
+/* Keep the entire walked route visible while the world camera moves. */
+.trail-overview{position:absolute;z-index:2;top:66px;left:clamp(18px,3vw,44px);width:260px;padding:11px 13px 8px;border:1px solid #7b9f98;background:#10252be8;border-radius:12px;box-shadow:0 10px 28px #07151777;pointer-events:none}
+.trail-overview-heading{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.trail-overview-heading strong{font-size:11px;color:#e4f2d3}
+.trail-overview-heading span{font-size:9px;color:#9ab8ad}
+.trail-overview svg{display:block;width:100%;height:73px;margin-top:2px;overflow:visible}
+.trail-overview-guide{fill:none;stroke:#68877b;stroke-width:1;stroke-dasharray:4 5;opacity:.7}
+#trail-overview-line{fill:none;stroke:#dcef93;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.trail-overview-start{fill:#8da89d}
+#trail-overview-current{fill:#ee987e;stroke:#f7efd8;stroke-width:2}
+@media(max-width:600px){.trail-overview{top:50px;left:16px;width:185px;padding:8px 10px}.trail-overview svg{height:55px}}
+
