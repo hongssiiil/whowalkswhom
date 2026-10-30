@@ -67,11 +67,12 @@
 .plan-row.recommended{border-color:#9dbb77;background:#dcef9310;color:#edf7da}.plan-row.recommended b{color:#dcef93}
 .dog-message{margin-top:0;transition:background .25s,border-color .25s;border:1px solid transparent}
 .dog-message>div{min-width:0}.dog-message p{font-size:12px}.dog-message small{display:block;font-size:10px;line-height:1.45;margin-top:7px;color:#b9d7a8}
-.dog-message.resisting{background:#513035;border-color:#bf6966}
-.dog-message.resisting .dog-icon{background:#ee746d;color:#482928}
-.dog-message.resisting small{color:#ffc2b5}
-.overlay.rejected .decision-panel{border:3px solid #dc8277}
-.overlay.rejected .decision-panel .eyebrow{color:#c65e54}
+.dog-message.refusing{background:#34443e;border-color:#8da99a}
+.dog-message.refusing .dog-icon{background:#b8c9ac;color:#34443e;transform:rotate(-28deg)}
+.dog-message.refusing small{color:#d3dfca}
+.overlay.rejected .decision-panel{border:3px solid #9eb7a3}
+.overlay.rejected .decision-panel .eyebrow{color:#5b8065}
+.legend-revise{background:#a8c0b4}
 @media(max-width:900px){.game-sidebar{max-height:none;overflow:visible}.stage-card{grid-column:1/3}.stage-plans{grid-template-columns:repeat(3,minmax(0,1fr))}.plan-row{display:block}.plan-row b,.plan-row em{display:block}.plan-row span{display:block;margin:4px 0}.dog-message{grid-column:1/3}}
 @media(max-width:600px){.stage-plans{grid-template-columns:1fr}.plan-row{display:grid;grid-template-columns:27px minmax(0,1fr) auto}.plan-row span{margin:0}.plan-row em{display:inline}}
 
